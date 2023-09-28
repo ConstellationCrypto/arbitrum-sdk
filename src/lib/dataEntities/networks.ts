@@ -395,6 +395,26 @@ export const getEthBridgeInformation = async (
   }
 }
 
+export const addCustomL3Network = (
+  customL3Network: L2Network
+) => {
+  if (l2Networks[customL3Network.chainID])
+    throw new ArbSdkError(`Network ${customL3Network.chainID} already included`)
+  else if (!customL3Network.isCustom) {
+    throw new ArbSdkError(
+      `Custom network ${customL3Network.chainID} must have isCustom flag set to true`
+    )
+  }
+
+  const l2PartnerChain = l2Networks[customL3Network.partnerChainID]
+  if (!l2PartnerChain)
+    throw new ArbSdkError(
+      `Network ${customL3Network.chainID}'s partner network, ${customL3Network.partnerChainID}, not recognized`
+    )
+
+  l2Networks[customL3Network.chainID] = customL3Network
+}
+
 export const addCustomNetwork = ({
   customL1Network,
   customL2Network,
