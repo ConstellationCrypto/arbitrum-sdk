@@ -11,7 +11,6 @@ async function main() {
   const arbDeployer = getSigner(arbProvider, config.arbKey)
   const l3Deployer = getSigner(l3Provider, config.l3Key)
 
-  // DFS1
   const { l1Network, l2Network, l3Network } = await setupNetworks(
     ethDeployer,
     arbDeployer,

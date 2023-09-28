@@ -103,7 +103,6 @@ function getL3DeploymentData() {
   }
 }
 
-// DFS3
 export const getCustomNetworks = async (
   l1Url: string,
   l2Url: string,
@@ -117,7 +116,6 @@ export const getCustomNetworks = async (
   const l2Provider = new JsonRpcProvider(l2Url)
   const l3Provider = new JsonRpcProvider(l3Url)
 
-  // DFS4
   const parsedL2DeploymentData = getL2DeploymentData()
   const parsedL3DeploymentData = getL3DeploymentData()
 
@@ -217,13 +215,11 @@ export const setupNetworks = async (
   l2Url: string,
   l3Url: string
 ) => {
-  // DFS2 - done
   const { l1Network, l2Network: coreL2Network, l3Network: coreL3Network } = await getCustomNetworks(
     l1Url,
     l2Url,
     l3Url
   )
-  // DFS5 - done
   const tokenBridgeContracts = await deployErc20AndInit(
     l1Deployer,
     l2Deployer,
@@ -273,7 +269,6 @@ export const setupNetworks = async (
     },
   }
 
-  // DFS - done
   addCustomNetwork({
     customL1Network: l1Network,
     customL2Network: l2Network,

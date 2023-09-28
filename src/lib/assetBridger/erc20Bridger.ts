@@ -927,7 +927,6 @@ export class AdminErc20Bridger extends Erc20Bridger {
     tokenGateways: TokenAndGateway[],
     options?: GasOverrides
   ): Promise<L1ContractCallTransaction> {
-    console.log('ya?')
     if (!SignerProviderUtils.signerHasProvider(l1Signer)) {
       throw new MissingProviderArbSdkError('l1Signer')
     }
@@ -971,8 +970,6 @@ export class AdminErc20Bridger extends Erc20Bridger {
       data: estimates.data,
       value: estimates.estimates.deposit,
     })
-
-    console.log('ooooooooooo')
 
     return L1TransactionReceipt.monkeyPatchContractCallWait(res)
   }
