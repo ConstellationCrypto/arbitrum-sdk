@@ -67,40 +67,31 @@ function getDeploymentData(dockerNames: string[], deploymentPath: string) {
       // empty on purpose
     }
   }
-  throw new Error(`${deploymentPath} not found in any of the provided containers`)
+  throw new Error(`${deploymentPath} not found in any containers ${JSON.stringify(dockerNames)}`)
 }
 
 function getL2DeploymentData() {
-  const dockerNames = [
-    'nitro_sequencer_1',
-    'nitro-sequencer-1',
-    'nitro-testnode-sequencer-1',
-    'nitro-testnode_sequencer_1',
-  ]
-  const deploymentPath = '/config/deployment.json'
-  try {
-    return getDeploymentData(dockerNames, deploymentPath)
-  }
-  catch (e) {
-    throw new Error('nitro-testnode L2 sequencer not found')
-  }
+  return getDeploymentData(
+    [
+      'nitro_l2node_1',
+      'nitro-l2node-1',
+      'nitro-testnode-l2node-1',
+      'nitro-testnode_l2node_1',
+    ], 
+    '/config/deployment.json'
+  )
 }
 
 function getL3DeploymentData() {
-  const dockerNames = [
-    'nitro_l3node_1',
-    'nitro-l3node-1',
-    'nitro-testnode-l3node-1',
-    'nitro-testnode_l3node_1',
-  ]
-  const deploymentPath = '/config/l3deployment.json'
-  
-  try {
-    return getDeploymentData(dockerNames, deploymentPath)
-  }
-  catch (e) {
-    throw new Error('nitro-testnode L3 sequencer not found')
-  }
+  return getDeploymentData(
+    [
+      'nitro_l3node_1',
+      'nitro-l3node-1',
+      'nitro-testnode-l3node-1',
+      'nitro-testnode_l3node_1',
+    ], 
+    '/config/l3deployment.json'
+  )
 }
 
 export const getCustomNetworks = async (
