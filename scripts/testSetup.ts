@@ -73,10 +73,10 @@ function getDeploymentData(dockerNames: string[], deploymentPath: string) {
 function getL2DeploymentData() {
   return getDeploymentData(
     [
-      'nitro_l2node_1',
-      'nitro-l2node-1',
-      'nitro-testnode-l2node-1',
-      'nitro-testnode_l2node_1',
+      'nitro_sequencer_1',
+      'nitro-sequencer-1',
+      'nitro-testnode-sequencer-1',
+      'nitro-testnode_sequencer_1',
     ], 
     '/config/deployment.json'
   )
@@ -287,8 +287,11 @@ export const setupNetworks = async (
       ).wait()
     ).waitForL2(childDeployer)
   }
-  await registerWethGateway(l1Deployer, l2Deployer, l2Network)
-  await registerWethGateway(l2Deployer, l3Deployer, l3Network)
+  
+  await Promise.all([
+    registerWethGateway(l1Deployer, l2Deployer, l2Network),
+    registerWethGateway(l2Deployer, l3Deployer, l3Network),
+  ])
   
   return {
     l1Network,
