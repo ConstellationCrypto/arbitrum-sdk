@@ -50,42 +50,57 @@ export const config = {
   ethKey: process.env['ETH_KEY'] as string,
 }
 
-function getL2DeploymentData(): string {
+function getDeploymentData(dockerNames: string[], deploymentPath: string) {
+  for (const dockerName of dockerNames) {
+    try {
+      const str = execSync(
+        `docker exec ${dockerName} cat ${deploymentPath}`
+      ).toString()
+
+      return JSON.parse(str) as {
+        bridge: string
+        inbox: string
+        ['sequencer-inbox']: string
+        rollup: string
+      }
+    } catch {
+      // empty on purpose
+    }
+  }
+  throw new Error(`${deploymentPath} not found in any of the provided containers`)
+}
+
+function getL2DeploymentData() {
   const dockerNames = [
     'nitro_sequencer_1',
     'nitro-sequencer-1',
     'nitro-testnode-sequencer-1',
     'nitro-testnode_sequencer_1',
   ]
-  for (const dockerName of dockerNames) {
-    try {
-      return execSync(
-        'docker exec ' + dockerName + ' cat /config/deployment.json'
-      ).toString()
-    } catch {
-      // empty on purpose
-    }
+  const deploymentPath = '/config/deployment.json'
+  try {
+    return getDeploymentData(dockerNames, deploymentPath)
   }
-  throw new Error('nitro-testnode L2 sequencer not found')
+  catch (e) {
+    throw new Error('nitro-testnode L2 sequencer not found')
+  }
 }
 
-function getL3DeploymentData(): string {
+function getL3DeploymentData() {
   const dockerNames = [
     'nitro_l3node_1',
     'nitro-l3node-1',
     'nitro-testnode-l3node-1',
     'nitro-testnode_l3node_1',
   ]
-  for (const dockerName of dockerNames) {
-    try {
-      return execSync(
-        'docker exec ' + dockerName + ' cat /config/l3deployment.json'
-      ).toString()
-    } catch {
-      // empty on purpose
-    }
+  const deploymentPath = '/config/l3deployment.json'
+  
+  try {
+    return getDeploymentData(dockerNames, deploymentPath)
   }
-  throw new Error('nitro-testnode L3 sequencer not found')
+  catch (e) {
+    throw new Error('nitro-testnode L3 sequencer not found')
+  }
 }
 
 // DFS3
@@ -103,20 +118,8 @@ export const getCustomNetworks = async (
   const l3Provider = new JsonRpcProvider(l3Url)
 
   // DFS4
-  const l2DeploymentData = getL2DeploymentData()
-  const l3DeploymentData = getL3DeploymentData()
-  const parsedL2DeploymentData = JSON.parse(l2DeploymentData) as {
-    bridge: string
-    inbox: string
-    ['sequencer-inbox']: string
-    rollup: string
-  }
-  const parsedL3DeploymentData = JSON.parse(l3DeploymentData) as {
-    bridge: string
-    inbox: string
-    ['sequencer-inbox']: string
-    rollup: string
-  }
+  const parsedL2DeploymentData = getL2DeploymentData()
+  const parsedL3DeploymentData = getL3DeploymentData()
 
   const l2Rollup = RollupAdminLogic__factory.connect(
     parsedL2DeploymentData.rollup,
@@ -228,6 +231,7 @@ export const setupNetworks = async (
     coreL2Network.ethBridge.inbox,
     coreL3Network.ethBridge.inbox
   )
+
   const l2Network: L2Network = {
     ...coreL2Network,
     tokenBridge: {
@@ -317,14 +321,17 @@ export const getSigner = (provider: JsonRpcProvider, key?: string) => {
 export const testSetup = async (): Promise<{
   l1Network: L1Network
   l2Network: L2Network
+  l3Network: L2Network
   l1Signer: Signer
   l2Signer: Signer
+  l3Signer: Signer
   erc20Bridger: Erc20Bridger
   ethBridger: EthBridger
   adminErc20Bridger: AdminErc20Bridger
   inboxTools: InboxTools
   l1Deployer: Signer
   l2Deployer: Signer
+  l3Deployer: Signer
 }> => {
   const ethProvider = new JsonRpcProvider(config.ethUrl)
   const arbProvider = new JsonRpcProvider(config.arbUrl)
@@ -392,13 +399,16 @@ export const testSetup = async (): Promise<{
   return {
     l1Signer,
     l2Signer,
+    l3Signer,
     l1Network: setL1Network,
     l2Network: setL2Network,
+    l3Network: setL3Network,
     erc20Bridger,
     adminErc20Bridger,
     ethBridger,
     inboxTools,
     l1Deployer,
     l2Deployer,
+    l3Deployer,
   }
 }

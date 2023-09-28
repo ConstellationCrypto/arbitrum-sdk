@@ -413,6 +413,19 @@ export const addCustomL3Network = (
     )
 
   l2Networks[customL3Network.chainID] = customL3Network
+
+  
+  // todo: this is a hack to make sure things like Erc20Bridger still work when an l3 network is passed in
+  const parentChain = l2Networks[customL3Network.partnerChainID]
+  l1Networks[parentChain.chainID] = {
+    chainID: parentChain.chainID,
+    name: parentChain.name,
+    explorerUrl: parentChain.explorerUrl,
+    partnerChainIDs: [customL3Network.chainID],
+    blockTime: 0, // ???
+    isCustom: true,
+    isArbitrum: false,
+  }
 }
 
 export const addCustomNetwork = ({
