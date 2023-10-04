@@ -37,10 +37,10 @@
   optionalDependencies:
     sol2uml "2.2.0"
 
-"@arbitrum/token-bridge-contracts@1.1.0-alpha.1":
-  version "1.1.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@arbitrum/token-bridge-contracts/-/token-bridge-contracts-1.1.0-alpha.1.tgz#35ef4101445f510787352c4aea42939376ead951"
-  integrity sha512-NZiIrpozPc0ZhkEG2+RNqWdNH56qAaZau5WGhoIkazLhlRL6R/iLx2HGtcYzq0RrorD0KagDn7voX4rOumL5fQ==
+"@arbitrum/token-bridge-contracts@1.1.0-alpha.0":
+  version "1.1.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@arbitrum/token-bridge-contracts/-/token-bridge-contracts-1.1.0-alpha.0.tgz#dcbc915fb3758b5bb01efde1b5d5fe822d24b722"
+  integrity sha512-jR/HpGq+vYSE6r35MkQk91ssunMuZpTY2WwVmcKY0qLfY5/zXGlm6BxvqWiPuu/3i+kToC9as6sKo8FLJvqsiw==
   dependencies:
     "@arbitrum/nitro-contracts" "^1.0.0-beta.8"
     "@openzeppelin/contracts" "4.8.3"

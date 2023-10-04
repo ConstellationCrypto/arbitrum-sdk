@@ -365,19 +365,34 @@ export class L2ToL1MessageReaderNitro extends L2ToL1MessageNitro {
       throw new ArbSdkError('L2ToL1Msg expected to be unconfirmed')
 
     const latestBlock = await this.l1Provider.getBlockNumber()
+
+    // This does not work on a L3 where the base chain is a Arbitrum Chain because
+    // latestBlock would be in L2 blocks but confirmPeriodBlocks and ASSERTION_CONFIRMED_PADDING are in L1 blocks
+    let lookupBlock: number = Math.max(
+      latestBlock -
+        BigNumber.from(l2Network.confirmPeriodBlocks)
+          .add(ASSERTION_CONFIRMED_PADDING)
+          .toNumber(),
+      0
+    )
+    if (![1, 5].includes(l2Network.partnerChainID)) {
+      // save some rpc call on L1 chain that don't need this
+      try {
+        lookupBlock = (
+          await rollup.getNodeCreationBlockForLogLookup(0)
+        ).toNumber() // dirty hack to do a full range event lookup, TODO: fix this
+      } catch (e) {
+        // do nothing, this might happen if the rollup contract deployed does not support the new method yet
+      }
+    }
+
     const eventFetcher = new EventFetcher(this.l1Provider)
     const logs = (
       await eventFetcher.getEvents(
         RollupUserLogic__factory,
         t => t.filters.NodeCreated(),
         {
-          fromBlock: Math.max(
-            latestBlock -
-              BigNumber.from(l2Network.confirmPeriodBlocks)
-                .add(ASSERTION_CONFIRMED_PADDING)
-                .toNumber(),
-            0
-          ),
+          fromBlock: lookupBlock,
           toBlock: 'latest',
           address: rollup.address,
         }
